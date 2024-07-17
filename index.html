@@ -174,7 +174,7 @@
             
             const aspect = window.innerWidth / window.innerHeight;
             isMobile = window.innerWidth <= 768;
-            const fov = isMobile ? 100 : 75;
+            const fov = isMobile ? 60 : 75;
             
             camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -194,7 +194,7 @@
 
         function updateCameraPosition() {
             if (isMobile) {
-                camera.position.z = 7;
+                camera.position.z = 6;
                 camera.position.y = 0.5;
             } else {
                 camera.position.z = 5;
@@ -210,7 +210,7 @@
 
             const currentBook = books[currentBookIndex];
 
-            const scale = isMobile ? 0.8 : 1;
+            const scale = isMobile ? 1.2 : 1;
             const scaledWidth = BOOK_WIDTH * scale;
             const scaledHeight = BOOK_HEIGHT * scale;
             const scaledThickness = BOOK_THICKNESS * scale;
@@ -404,7 +404,7 @@
             camera.aspect = aspect;
             
             isMobile = window.innerWidth <= 768;
-            camera.fov = isMobile ? 100 : 75;
+            camera.fov = isMobile ? 60 : 75;
             
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
