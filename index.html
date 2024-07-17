@@ -142,6 +142,7 @@
         let currentLanguage = 'en';
         let currentBookIndex = 0;
         let isInfoVisible = false;
+        let isMobile = false;
         
         const BOOK_WIDTH = 3;
         const BOOK_HEIGHT = 4;
@@ -170,7 +171,12 @@
 
         function init() {
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            const aspect = window.innerWidth / window.innerHeight;
+            isMobile = window.innerWidth <= 768;
+            const fov = isMobile ? 100 : 75;
+            
+            camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
@@ -183,7 +189,18 @@
             updateBookInfo();
             updateBackground();
             
-            camera.position.z = 5;
+            updateCameraPosition();
+        }
+
+        function updateCameraPosition() {
+            if (isMobile) {
+                camera.position.z = 7;
+                camera.position.y = 0.5;
+            } else {
+                camera.position.z = 5;
+                camera.position.y = 0;
+            }
+            camera.lookAt(scene.position);
         }
 
         function createBook() {
@@ -193,23 +210,29 @@
 
             const currentBook = books[currentBookIndex];
 
-            const pageWidth = BOOK_WIDTH - (COVER_THICKNESS * 2);
-            const pageHeight = BOOK_HEIGHT - (COVER_THICKNESS * 2);
-            const pageThickness = BOOK_THICKNESS - (COVER_THICKNESS * 2);
+            const scale = isMobile ? 0.8 : 1;
+            const scaledWidth = BOOK_WIDTH * scale;
+            const scaledHeight = BOOK_HEIGHT * scale;
+            const scaledThickness = BOOK_THICKNESS * scale;
+            const scaledCoverThickness = COVER_THICKNESS * scale;
+
+            const pageWidth = scaledWidth - (scaledCoverThickness * 2);
+            const pageHeight = scaledHeight - (scaledCoverThickness * 2);
+            const pageThickness = scaledThickness - (scaledCoverThickness * 2);
             const pageGeometry = new THREE.BoxGeometry(pageWidth, pageHeight, pageThickness);
             const pageMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
             const pages = new THREE.Mesh(pageGeometry, pageMaterial);
 
-            const coverGeometry = new THREE.BoxGeometry(BOOK_WIDTH, BOOK_HEIGHT, COVER_THICKNESS);
+            const coverGeometry = new THREE.BoxGeometry(scaledWidth, scaledHeight, scaledCoverThickness);
             const coverMaterials = createBookMaterials();
             const frontCover = new THREE.Mesh(coverGeometry, coverMaterials);
-            frontCover.position.z = (BOOK_THICKNESS / 2) - (COVER_THICKNESS / 2);
+            frontCover.position.z = (scaledThickness / 2) - (scaledCoverThickness / 2);
 
             const backCoverMaterials = createBackCoverMaterials();
             const backCover = new THREE.Mesh(coverGeometry, backCoverMaterials);
-            backCover.position.z = -(BOOK_THICKNESS / 2) + (COVER_THICKNESS / 2);
+            backCover.position.z = -(scaledThickness / 2) + (scaledCoverThickness / 2);
 
-            const spineGeometry = new THREE.BoxGeometry(COVER_THICKNESS, BOOK_HEIGHT, BOOK_THICKNESS);
+            const spineGeometry = new THREE.BoxGeometry(scaledCoverThickness, scaledHeight, scaledThickness);
             const spineMaterial = new THREE.MeshPhongMaterial({
                 map: createSpineTexture(),
                 color: currentBook.spineColor,
@@ -218,7 +241,7 @@
                 shininess: 10
             });
             const spine = new THREE.Mesh(spineGeometry, spineMaterial);
-            spine.position.x = -(BOOK_WIDTH / 2) + (COVER_THICKNESS / 2);
+            spine.position.x = -(scaledWidth / 2) + (scaledCoverThickness / 2);
 
             book.add(pages);
             book.add(frontCover);
@@ -377,9 +400,17 @@
         }
 
         function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
+            const aspect = window.innerWidth / window.innerHeight;
+            camera.aspect = aspect;
+            
+            isMobile = window.innerWidth <= 768;
+            camera.fov = isMobile ? 100 : 75;
+            
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            updateCameraPosition();
+            createBook(); // 本のサイズを更新するために再作成
         }
 
         function toggleTheme() {
