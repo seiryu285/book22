@@ -174,7 +174,7 @@
             
             const aspect = window.innerWidth / window.innerHeight;
             isMobile = window.innerWidth <= 768;
-            const fov = isMobile ? 60 : 75;
+            const fov = isMobile ? 65 : 75;
             
             camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -194,8 +194,8 @@
 
         function updateCameraPosition() {
             if (isMobile) {
-                camera.position.z = 6;
-                camera.position.y = 0.5;
+                camera.position.z = 5.5;
+                camera.position.y = 0.3;
             } else {
                 camera.position.z = 5;
                 camera.position.y = 0;
@@ -210,7 +210,7 @@
 
             const currentBook = books[currentBookIndex];
 
-            const scale = isMobile ? 1.2 : 1;
+            const scale = isMobile ? 1.1 : 1;
             const scaledWidth = BOOK_WIDTH * scale;
             const scaledHeight = BOOK_HEIGHT * scale;
             const scaledThickness = BOOK_THICKNESS * scale;
@@ -353,8 +353,7 @@
             window.addEventListener('resize', onWindowResize, false);
             document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
             document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
-            document.getElementById('prev-book').addEventListener('click', () => changeBook(-1));
-            document.getElementById('next-book').addEventListener('click', () => changeBook(1));
+          document.getElementById('next-book').addEventListener('click', () => changeBook(1));
             document.getElementById('buy-button').addEventListener('click', addToCart);
             document.getElementById('info-toggle').addEventListener('click', toggleBookInfo);
         }
@@ -404,7 +403,7 @@
             camera.aspect = aspect;
             
             isMobile = window.innerWidth <= 768;
-            camera.fov = isMobile ? 60 : 75;
+            camera.fov = isMobile ? 65 : 75;
             
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
